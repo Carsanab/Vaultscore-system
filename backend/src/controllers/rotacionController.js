@@ -1,41 +1,75 @@
-   const multer = require('multer');
-   const path = require('path');
-   const fs = require('fs');
-   const estadoEvaluacion = require('../services/estadoEvaluacion');
+const multer = require('multer');
+const { createClient } = require('@supabase/supabase-js');
+const estadoEvaluacion = require('../services/estadoEvaluacion');
 
-   // Crear carpeta de uploads si no existe
-   const uploadDir = path.join(__dirname, '../../uploads');
-   if (!fs.existsSync(uploadDir)) {
-     fs.mkdirSync(uploadDir, { recursive: true });
-   }
+// Inicializar cliente de Supabase
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_KEY;
+const supabase = createClient(supabaseUrl, supabaseKey);
 
-   // Configurar multer para guardar siempre como 'rotacion.jpg' (sobreescribe la anterior)
-   const storage = multer.diskStorage({
-     destination: (req, file, cb) => cb(null, uploadDir),
-     filename: (req, file, cb) => cb(null, 'rotacion.jpg')
-   });
-   const upload = multer({ storage });
+// Usar memoryStorage para no guardar en disco (mejor para la nube)
+const storage = multer.memoryStorage();
+const upload = multer({ 
+  storage: storage,
+  limits: { fileSize: 5 * 1024 * 1024 } // Límite de 5MB
+});
 
-   // 1. Middleware para subir la imagen
-   exports.subirImagenRotacion = upload.single('imagen');
+// 1. Middleware para procesar la imagen
+exports.subirImagenRotacion = upload.single('imagen');
 
-   // 2. Activar rotación
-   exports.activarRotacion = async (req, res) => {
-     estadoEvaluacion.setModoRotacion(true);
-     res.json({ message: 'Rotación activada' });
-   };
+// 2. Lógica para subir a Supabase Storage y activar
+exports.activarRotacion = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: 'No se proporcionó ninguna imagen' });
+    }
 
-   // 3. Desactivar rotación (Quitar)
-   exports.desactivarRotacion = async (req, res) => {
-     estadoEvaluacion.setModoRotacion(false);
-     res.json({ message: 'Rotación desactivada' });
-   };
+    const fileName = 'rotacion.jpg';
+    const bucketName = 'rotaciones';
 
-   // 4. Obtener estado actual (y la URL de la imagen)
-   exports.getEstadoRotacion = async (req, res) => {
-     const baseUrl = req.protocol + '://' + req.get('host');
-     res.json({ 
-       activa: estadoEvaluacion.getModoRotacion(),
-       imageUrl: `${baseUrl}/uploads/rotacion.jpg`
-     });
-   };
+    // Subir archivo a Supabase Storage
+    const { data, error } = await supabase.storage
+      .from(bucketName)
+      .upload(fileName, req.file.buffer, {
+        contentType: req.file.mimetype,
+        upsert: true // Sobreescribe si ya existe
+      });
+
+    if (error) {
+      console.error('Error al subir a Supabase:', error);
+      return res.status(500).json({ error: 'Error al guardar la imagen en la nube' });
+    }
+
+    // Obtener la URL pública de la imagen
+    const { data: urlData } = supabase.storage
+      .from(bucketName)
+      .getPublicUrl(fileName);
+
+    // Guardamos la URL en el estado global para que las pantallas la lean
+    estadoEvaluacion.setImagenRotacion(urlData.publicUrl);
+    estadoEvaluacion.setModoRotacion(true);
+
+    res.json({ 
+      message: 'Imagen subida y rotación activada', 
+      imageUrl: urlData.publicUrl 
+    });
+
+  } catch (error) {
+    console.error('Error en activarRotacion:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+};
+
+// 3. Desactivar rotación
+exports.desactivarRotacion = async (req, res) => {
+  estadoEvaluacion.setModoRotacion(false);
+  res.json({ message: 'Rotación desactivada' });
+};
+
+// 4. Obtener estado actual
+exports.getEstadoRotacion = async (req, res) => {
+  res.json({ 
+    activa: estadoEvaluacion.getModoRotacion(),
+    imageUrl: estadoEvaluacion.getImagenRotacion() || null
+  });
+};

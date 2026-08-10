@@ -6,6 +6,7 @@ const MAX_COLA = 10; // Máximo de gimnastas visibles en pantalla
 
 // Estado para el modo rotación
 let modoRotacionActivo = false;
+let imagenRotacionUrl = null;
 
 module.exports = {
   getUltimaEvaluacion: () => {
@@ -63,5 +64,12 @@ module.exports = {
   
   getModoRotacion: () => {
     return modoRotacionActivo;
+  },
+
+  setImagenRotacion: (url) => {
+    imagenRotacionUrl = url;
+  },
+  getImagenRotacion: () => {
+    return imagenRotacionUrl;
   }
 };
