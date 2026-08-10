@@ -3,11 +3,13 @@ const { Pool } = require('pg');
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: {
-    rejectUnauthorized: false // Obligatorio para Supabase
-  }
+    rejectUnauthorized: false
+  },
+  // ✅ FORZAR IPv4 (soluciona el error ENETUNREACH en Render)
+  host: 'db.iyxwkklpelhijzneynwo.supabase.co',
+  family: 4
 });
 
-// Prueba de conexión inmediata
 pool.query('SELECT NOW()', (err, res) => {
   if (err) {
     console.error('❌ ERROR DE CONEXIÓN A SUPABASE:', err.message);
