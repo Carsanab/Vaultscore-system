@@ -5,7 +5,7 @@ const pool = new Pool({
   port: 5432,
   database: 'postgres',
   user: 'postgres',
-  password: 'Mostrinas1702', // ✅ Sin símbolos, conexión limpia
+  password: 'Mostrinas1702',
   ssl: {
     rejectUnauthorized: false
   }
@@ -19,4 +19,4 @@ pool.query('SELECT NOW()', (err, res) => {
   }
 });
 
-module.exports = pool;git
+module.exports = pool;
