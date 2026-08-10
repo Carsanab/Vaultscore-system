@@ -3,7 +3,8 @@ const pool = require('../config/database');
 // Obtener todos los torneos
 exports.getTorneos = async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM torneos ORDER BY fecha DESC');
+    // ✅ Cambiamos 'fecha' por 'creado_en' (columna por defecto de Supabase)
+    const result = await pool.query('SELECT * FROM torneos ORDER BY creado_en DESC');
     res.json(result.rows);
   } catch (error) {
     console.error('Error al obtener torneos:', error);
@@ -18,15 +19,17 @@ exports.createTorneo = async (req, res) => {
       return res.status(403).json({ error: 'Solo administradores pueden crear torneos' });
     }
 
-    const { nombre, fecha, ubicacion } = req.body;
+    // ✅ Eliminamos 'fecha' de la desestructación para evitar errores
+    const { nombre, ubicacion } = req.body;
 
-    if (!nombre || !fecha) {
-      return res.status(400).json({ error: 'El nombre y la fecha son requeridos' });
+    if (!nombre) {
+      return res.status(400).json({ error: 'El nombre es requerido' });
     }
 
+    // ✅ Insertamos solo nombre y ubicacion
     const result = await pool.query(
-      'INSERT INTO torneos (nombre, fecha, ubicacion) VALUES ($1, $2, $3) RETURNING *',
-      [nombre, fecha, ubicacion || null]
+      'INSERT INTO torneos (nombre, ubicacion) VALUES ($1, $2) RETURNING *',
+      [nombre, ubicacion || null]
     );
 
     res.status(201).json({
@@ -48,13 +51,14 @@ exports.updateTorneo = async (req, res) => {
     }
 
     const { id } = req.params;
-    const { nombre, fecha, ubicacion, estado } = req.body;
+    // ✅ Eliminamos 'fecha' de la actualización
+    const { nombre, ubicacion, estado } = req.body;
 
     const result = await pool.query(
       `UPDATE torneos 
-       SET nombre = $1, fecha = $2, ubicacion = $3, estado = $4 
-       WHERE id = $5 RETURNING *`,
-      [nombre, fecha, ubicacion, estado || 'activo', id]
+       SET nombre = $1, ubicacion = $2, estado = $3 
+       WHERE id = $4 RETURNING *`,
+      [nombre, ubicacion, estado || 'activo', id]
     );
 
     if (result.rows.length === 0) {
