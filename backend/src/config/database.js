@@ -1,22 +1,21 @@
 const { Pool } = require('pg');
 
 const pool = new Pool({
-  host: 'db.iyxwkklpelhijzneynwo.supabase.co',
-  port: 5432,
+  host: 'aws-0-us-west-2.pooler.supabase.com',
+  port: 6543,
   database: 'postgres',
-  user: 'postgres',
+  user: 'postgres.iyxwkklpelhijzneynwo',
   password: 'Mostris1702@',
   ssl: {
     rejectUnauthorized: false
-  },
-  family: 4 // ✅ Forzar IPv4
+  }
 });
 
 pool.query('SELECT NOW()', (err, res) => {
   if (err) {
-    console.error('❌ ERROR DE CONEXIÓN A SUPABASE:', err.message);
+    console.error('❌ ERROR DE CONEXIÓN:', err.message);
   } else {
-    console.log('✅ ¡Conectado exitosamente a Supabase!');
+    console.log('✅ ¡Conectado exitosamente a Supabase vía Pooler!');
   }
 });
 
