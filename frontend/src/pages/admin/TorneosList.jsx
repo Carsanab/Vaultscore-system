@@ -119,7 +119,12 @@ const TorneosList = () => {
               {torneos.map((torneo) => (
                 <tr key={torneo.id} style={styles.tr}>
                   <td style={styles.td}>{torneo.nombre}</td>
-                  <td style={styles.td}>{new Date(torneo.fecha).toLocaleDateString('es-ES')}</td>
+                  <td style={styles.td}>
+                    {(() => {
+                      const [year, month, day] = torneo.fecha.split('-');
+                      return `${day}/${month}/${year}`;
+                    })()}
+                  </td>
                   <td style={styles.td}>{torneo.ubicacion || 'No especificada'}</td>
                   <td style={styles.td}>
                     <div style={styles.actions}>
