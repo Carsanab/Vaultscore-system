@@ -313,18 +313,6 @@ const JuezDashboard = () => {
     }
   };
 
-  const limpiarPantallaJueces = async () => {
-    if (window.confirm('¿Estás seguro de limpiar la pantalla pública de jueces?')) {
-      try {
-        await api.post('/evaluaciones/limpiar-pantalla');
-        setMensaje({ tipo: 'success', texto: '🗑️ Pantalla de jueces limpiada' });
-        setTimeout(() => setMensaje({ tipo: '', texto: '' }), 3000);
-      } catch (error) {
-        setMensaje({ tipo: 'error', texto: 'Error al limpiar pantalla' });
-      }
-    }
-  };
-
   const handlePosicionChange = (index, valor) => {
     const nuevaPosicion = parseInt(valor) || 0;
     const nuevasFilas = [...filaGimnastas];
@@ -362,7 +350,6 @@ const JuezDashboard = () => {
         <button onClick={() => setModalAgregarGimnasta(true)} style={styles.topButton}>Agregar Gimnasta</button>
         <button onClick={handleLimpiar} style={styles.topButton}>Limpiar Pantalla</button>
         <button onClick={handleReordenar} style={styles.topButton}>Reordenar</button>
-        <button onClick={limpiarPantallaJueces} style={styles.limpiarJuecesButton}>🗑️ Limpiar TV Jueces</button>
         <button onClick={handleLogout} style={styles.logoutButton}>🚪 Cerrar Sesión</button>
         <div style={styles.fecha}>{fechaActual}</div>
       </div>
@@ -648,7 +635,6 @@ const styles = {
   container: { backgroundColor: '#faf8f3', minHeight: '100vh', padding: '0', fontFamily: 'Arial, sans-serif' },
   topBar: { backgroundColor: '#170000', padding: '12px 20px', display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap', borderBottom: '3px solid #d2b178' },
   topButton: { backgroundColor: '#d8372d', color: '#ffffff', border: '2px solid #ffffff', borderRadius: '4px', padding: '10px 20px', fontSize: '0.95rem', fontWeight: '700', cursor: 'pointer' },
-  limpiarJuecesButton: { backgroundColor: '#4a2c2a', color: '#ffffff', border: '2px solid #ffffff', borderRadius: '4px', padding: '10px 18px', fontSize: '0.95rem', fontWeight: '700', cursor: 'pointer', transition: 'all 0.2s' },
   logoutButton: { backgroundColor: '#d8372d', color: '#ffffff', border: '2px solid #ffffff', borderRadius: '4px', padding: '10px 18px', fontSize: '0.95rem', fontWeight: '700', cursor: 'pointer' },
   fecha: { color: '#d2b178', fontSize: '1rem', fontWeight: '600', textTransform: 'capitalize', marginLeft: 'auto' },
   infoPanel: { backgroundColor: '#ffffff', padding: '15px 20px', borderBottom: '2px solid #e8d5b5' },
