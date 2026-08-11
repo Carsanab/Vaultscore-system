@@ -3,11 +3,27 @@ const pool = require('../config/database');
 // Obtener todos los torneos
 exports.getTorneos = async (req, res) => {
   try {
-    // ✅ Usamos 'id' en lugar de 'fecha' para evitar el error de columna faltante
     const result = await pool.query('SELECT * FROM torneos ORDER BY id DESC');
     res.json(result.rows);
   } catch (error) {
     console.error('Error al obtener torneos:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+};
+
+// Obtener un torneo por ID
+exports.getTorneoById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await pool.query('SELECT * FROM torneos WHERE id = $1', [id]);
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Torneo no encontrado' });
+    }
+    
+    res.json(result.rows[0]);
+  } catch (error) {
+    console.error('Error al obtener torneo:', error);
     res.status(500).json({ error: 'Error interno del servidor' });
   }
 };
@@ -19,17 +35,19 @@ exports.createTorneo = async (req, res) => {
       return res.status(403).json({ error: 'Solo administradores pueden crear torneos' });
     }
 
-    // ✅ Eliminamos 'fecha' de la desestructación para evitar errores
-    const { nombre, ubicacion } = req.body;
+    const { nombre, fecha, ubicacion } = req.body;
 
     if (!nombre) {
       return res.status(400).json({ error: 'El nombre es requerido' });
     }
 
-    // ✅ Insertamos solo nombre y ubicacion
+    if (!fecha) {
+      return res.status(400).json({ error: 'La fecha es requerida' });
+    }
+
     const result = await pool.query(
-      'INSERT INTO torneos (nombre, ubicacion) VALUES ($1, $2) RETURNING *',
-      [nombre, ubicacion || null]
+      'INSERT INTO torneos (nombre, fecha, ubicacion, estado) VALUES ($1, $2, $3, $4) RETURNING *',
+      [nombre, fecha, ubicacion || null, 'activo']
     );
 
     res.status(201).json({
@@ -51,14 +69,13 @@ exports.updateTorneo = async (req, res) => {
     }
 
     const { id } = req.params;
-    // ✅ Eliminamos 'fecha' de la actualización
-    const { nombre, ubicacion, estado } = req.body;
+    const { nombre, fecha, ubicacion, estado } = req.body;
 
     const result = await pool.query(
       `UPDATE torneos 
-       SET nombre = $1, ubicacion = $2, estado = $3 
-       WHERE id = $4 RETURNING *`,
-      [nombre, ubicacion, estado || 'activo', id]
+       SET nombre = $1, fecha = $2, ubicacion = $3, estado = $4 
+       WHERE id = $5 RETURNING *`,
+      [nombre, fecha, ubicacion, estado || 'activo', id]
     );
 
     if (result.rows.length === 0) {
@@ -101,3 +118,5 @@ exports.deleteTorneo = async (req, res) => {
     res.status(500).json({ error: 'Error interno del servidor' });
   }
 };
+
+module.exports = exports;
