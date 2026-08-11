@@ -3,8 +3,8 @@ const pool = require('../config/database');
 // Obtener todos los torneos
 exports.getTorneos = async (req, res) => {
   try {
-    // ✅ Cambiamos 'fecha' por 'creado_en' (columna por defecto de Supabase)
-    const result = await pool.query('SELECT * FROM torneos ORDER BY creado_en DESC');
+    // ✅ Usamos 'id' en lugar de 'fecha' para evitar el error de columna faltante
+    const result = await pool.query('SELECT * FROM torneos ORDER BY id DESC');
     res.json(result.rows);
   } catch (error) {
     console.error('Error al obtener torneos:', error);
