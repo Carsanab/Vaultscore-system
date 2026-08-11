@@ -64,13 +64,23 @@ const TorneosList = () => {
   };
 
   const handleEdit = (torneo) => {
+    // ✅ FIX: Extraer solo la parte de la fecha (YYYY-MM-DD) para el input date
+    const fechaCorta = torneo.fecha.split('T')[0];
+    
     setFormData({
       nombre: torneo.nombre,
-      fecha: torneo.fecha,
+      fecha: fechaCorta,
       ubicacion: torneo.ubicacion || ''
     });
     setEditingId(torneo.id);
     setIsModalOpen(true);
+  };
+
+  // ✅ FIX: Función helper para formatear fecha
+  const formatearFecha = (fechaCompleta) => {
+    const fechaCorta = fechaCompleta.split('T')[0]; // "2026-08-11"
+    const [year, month, day] = fechaCorta.split('-');
+    return `${day}/${month}/${year}`;
   };
 
   return (
@@ -119,12 +129,7 @@ const TorneosList = () => {
               {torneos.map((torneo) => (
                 <tr key={torneo.id} style={styles.tr}>
                   <td style={styles.td}>{torneo.nombre}</td>
-                  <td style={styles.td}>
-                    {(() => {
-                      const [year, month, day] = torneo.fecha.split('-');
-                      return `${day}/${month}/${year}`;
-                    })()}
-                  </td>
+                  <td style={styles.td}>{formatearFecha(torneo.fecha)}</td>
                   <td style={styles.td}>{torneo.ubicacion || 'No especificada'}</td>
                   <td style={styles.td}>
                     <div style={styles.actions}>
@@ -206,7 +211,7 @@ const TorneosList = () => {
                   type="submit"
                   style={styles.primaryButton}
                 >
-                  {editingId ? '💾 Actualizar' : '✅ Crear'}
+                  {editingId ? ' Actualizar' : '✅ Crear'}
                 </button>
               </div>
             </form>
