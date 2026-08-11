@@ -2,16 +2,20 @@ import axios from 'axios';
 
 const getBaseUrl = () => {
   const hostname = window.location.hostname;
+  
+  // Si estamos en desarrollo local
   if (hostname === 'localhost' || hostname === '127.0.0.1') {
     return 'http://localhost:3000/api';
   }
-  return `http://${hostname}:3000/api`;
+  
+  // Si estamos en producción (Vercel), apuntar directamente a Railway
+  return 'https://vaultscore-system-production.up.railway.app/api';
 };
 
 const api = axios.create({
   baseURL: getBaseUrl(),
   headers: {
-    'Content-Type': 'application/json' // 👈 ESTA LÍNEA ES CLAVE
+    'Content-Type': 'application/json'
   }
 });
 
