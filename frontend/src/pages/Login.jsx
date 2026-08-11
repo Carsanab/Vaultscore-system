@@ -6,7 +6,6 @@ const Login = () => {
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
   
-  // Usamos un solo objeto formData para evitar errores de variables sueltas
   const [formData, setFormData] = useState({
     usuario: '',
     password: ''
@@ -26,7 +25,6 @@ const Login = () => {
     try {
       console.log('🔑 Intentando login con:', formData);
       
-      // Pasamos formData.usuario y formData.password explícitamente
       const result = await login(formData.usuario, formData.password);
       
       console.log('✅ Login exitoso:', result);
@@ -51,7 +49,14 @@ const Login = () => {
   return (
     <div style={styles.container}>
       <div style={styles.loginBox}>
-        <h1 style={styles.title}>🏆 Club Atlético Los Andes</h1>
+        
+        {/* ✅ AQUÍ ESTÁ EL CAMBIO: Logo en lugar del texto */}
+        <img 
+          src="/logo.png" 
+          alt="VaultScore Logo" 
+          style={styles.logo} 
+        />
+        
         <h2 style={styles.subtitle}>Iniciar Sesión</h2>
         
         {error && (
@@ -117,12 +122,12 @@ const styles = {
     width: '100%',
     maxWidth: '450px',
   },
-  title: {
-    fontSize: '2.5rem',
-    color: '#d2b178',
-    textAlign: 'center',
-    marginBottom: '10px',
-    fontWeight: '700',
+  // ✅ Nuevo estilo para el logo
+  logo: {
+    width: '220px',       // Ajusta este número si quieres el logo más grande o más pequeño
+    height: 'auto',
+    display: 'block',
+    margin: '0 auto 20px auto', // Esto lo centra perfectamente
   },
   subtitle: {
     fontSize: '1.5rem',
