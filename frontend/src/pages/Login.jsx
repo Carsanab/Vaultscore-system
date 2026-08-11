@@ -53,7 +53,7 @@ const Login = () => {
         {/* ✅ AQUÍ ESTÁ EL CAMBIO: Logo en lugar del texto */}
         <img 
           src="/logo.png" 
-          alt="VaultScore Logo" 
+          alt="Gym Arg Score Logo" 
           style={styles.logo} 
         />
         

@@ -1,7 +1,7 @@
 {
-  "name": "vaultscore-backend",
+  "name": "gym-arg-score-backend",
   "version": "1.0.0",
-  "description": "Backend para torneos de gimnasia",
+  "description": "API del sistema de gestión para torneos de gimnasia - Gym Arg Score",
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
