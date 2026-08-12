@@ -11,7 +11,7 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 const storage = multer.memoryStorage();
 const upload = multer({ 
   storage: storage,
-  limits: { fileSize: 5 * 1024 * 1024 } // Límite de 5MB
+  limits: { fileSize: 15 * 1024 * 1024 } // ✅ AUMENTADO: Límite de 15MB
 });
 
 // 1. Middleware para procesar la imagen
