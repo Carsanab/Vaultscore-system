@@ -23,11 +23,7 @@ const Login = () => {
     setLoading(true);
 
     try {
-      console.log('🔑 Intentando login con:', formData);
-      
       const result = await login(formData.usuario, formData.password);
-      
-      console.log('✅ Login exitoso:', result);
       const rol = result.user?.rol?.toLowerCase();
       
       if (rol === 'admin') {
@@ -38,8 +34,6 @@ const Login = () => {
         setError(`Rol no reconocido: ${rol}`);
       }
     } catch (err) {
-      console.error('❌ Error en login:', err);
-      console.error('📦 Respuesta del backend:', err.response?.data);
       setError(err.response?.data?.error || 'Usuario o contraseña incorrectos');
     } finally {
       setLoading(false);
@@ -49,15 +43,16 @@ const Login = () => {
   return (
     <div style={styles.container}>
       <div style={styles.loginBox}>
+        {/* Logo sin fondo y más pequeño */}
+        <div style={styles.logoContainer}>
+          <img 
+            src="/logo.png" 
+            alt="Gym Arg Score Logo" 
+            style={styles.logo}
+          />
+        </div>
         
-        {/* ✅ AQUÍ ESTÁ EL CAMBIO: Logo en lugar del texto */}
-        <img 
-          src="/logo.png" 
-          alt="Gym Arg Score Logo" 
-          style={styles.logo} 
-        />
-        
-        <h2 style={styles.subtitle}>Iniciar Sesión</h2>
+        <h1 style={styles.subtitle}>Iniciar Sesión</h1>
         
         {error && (
           <div style={styles.errorBox}>{error}</div>
@@ -107,85 +102,115 @@ const Login = () => {
 const styles = {
   container: {
     minHeight: '100vh',
+    width: '100vw',
+    margin: 0,
+    padding: 0,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#faf8f3',
-    padding: '20px',
+    background: `
+      linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%),
+      repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 10px,
+        rgba(255,255,255,0.03) 10px,
+        rgba(255,255,255,0.03) 20px
+      )
+    `,
+    position: 'relative',
+    overflow: 'hidden',
   },
   loginBox: {
-    backgroundColor: '#ffffff',
-    padding: '40px',
-    borderRadius: '12px',
-    boxShadow: '0 8px 25px rgba(0,0,0,0.15)',
-    border: '2px solid #d2b178',
-    width: '100%',
-    maxWidth: '450px',
+    backgroundColor: '#faf8f3',
+    padding: '40px 45px',
+    borderRadius: '16px',
+    boxShadow: '0 15px 50px rgba(0,0,0,0.6), 0 0 0 1px rgba(210, 177, 120, 0.4)',
+    border: '3px solid #d2b178',
+    width: '90%',
+    maxWidth: '420px',
   },
-  // ✅ Nuevo estilo para el logo
+  logoContainer: {
+    display: 'flex',
+    justifyContent: 'center',
+    marginBottom: '20px',
+  },
   logo: {
-    width: '220px',       // Ajusta este número si quieres el logo más grande o más pequeño
+    width: '110px',
     height: 'auto',
-    display: 'block',
-    margin: '0 auto 20px auto', // Esto lo centra perfectamente
+    objectFit: 'contain',
+    filter: 'drop-shadow(0 4px 12px rgba(210, 177, 120, 0.5))',
   },
   subtitle: {
-    fontSize: '1.5rem',
-    color: '#170000',
+    fontSize: '1.2rem',
+    color: '#d2b178',
     textAlign: 'center',
     marginBottom: '30px',
     fontWeight: '600',
+    borderBottom: '2px solid #e8d5b5',
+    paddingBottom: '15px',
+    margin: 0, // Agregado para limpiar márgenes por defecto de h1
   },
   errorBox: {
-    backgroundColor: 'rgba(216, 55, 45, 0.1)',
+    backgroundColor: 'rgba(216, 55, 45, 0.15)',
     color: '#d8372d',
     padding: '12px',
-    borderRadius: '6px',
+    borderRadius: '8px',
     marginBottom: '20px',
-    borderLeft: '4px solid #d8372d',
+    borderLeft: '5px solid #d8372d',
     fontWeight: '600',
+    fontSize: '0.95rem',
   },
   formGroup: {
-    marginBottom: '20px',
+    marginBottom: '22px',
   },
   label: {
     display: 'block',
     fontWeight: '700',
     color: '#170000',
     marginBottom: '8px',
-    fontSize: '1rem',
+    fontSize: '0.95rem',
+    letterSpacing: '0.5px',
   },
   input: {
     width: '100%',
-    padding: '12px',
+    padding: '12px 14px',
     border: '2px solid #d2b178',
-    borderRadius: '6px',
+    borderRadius: '8px',
     fontSize: '1rem',
     boxSizing: 'border-box',
+    backgroundColor: '#ffffff',
+    transition: 'all 0.3s ease',
+    outline: 'none',
   },
   button: {
     width: '100%',
     backgroundColor: '#d8372d',
     color: '#ffffff',
     border: 'none',
-    borderRadius: '8px',
+    borderRadius: '10px',
     padding: '14px',
     fontSize: '1.1rem',
     fontWeight: '700',
     cursor: 'pointer',
     marginTop: '10px',
+    boxShadow: '0 6px 20px rgba(216, 55, 45, 0.4)',
+    transition: 'all 0.3s ease',
+    textTransform: 'uppercase',
+    letterSpacing: '1px',
   },
   buttonDisabled: {
     width: '100%',
     backgroundColor: '#cccccc',
     color: '#666666',
     border: 'none',
-    borderRadius: '8px',
+    borderRadius: '10px',
     padding: '14px',
     fontSize: '1.1rem',
     fontWeight: '700',
     cursor: 'not-allowed',
     marginTop: '10px',
+    opacity: 0.7,
   },
 };
 
